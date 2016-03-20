@@ -53,6 +53,7 @@
     <ClInclude Include="EnvelopeGenerator.h" />
     <ClInclude Include="..\..\..\Signals-master\Delegate.h" />
     <ClInclude Include="..\..\..\Signals-master\GallantSignal.h" />
+    <ClInclude Include="Filter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\WDL\rtaudiomidi\RtAudio.cpp">
@@ -83,6 +84,7 @@
     <ClCompile Include="MIDIReceiver.cpp" />
     <ClCompile Include="Oscillator.cpp" />
     <ClCompile Include="EnvelopeGenerator.cpp" />
+    <ClCompile Include="Filter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Synthesis.rc" />

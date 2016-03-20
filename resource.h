@@ -67,6 +67,8 @@ instrument determined by PLUG _IS _INST
 #define BLACK_KEY_ID 103
 #define WAVEFORM_ID 104
 #define KNOB_ID	105 
+#define KNOB_SMALL_ID 106
+#define FILTERMODE_ID 107
 
 // Image resource locations for this plug.
 #define BG_FN	"resources/img/bg.png"
@@ -74,6 +76,8 @@ instrument determined by PLUG _IS _INST
 #define BLACK_KEY_FN	"resources/img/blackkey.png"
 #define WAVEFORM_FN		"resources/img/waveform.png"
 #define	KNOB_FN			"resources/img/knob.png"
+#define KNOB_SMALL_FN	"resources/img/knob_small.png"
+#define FILTERMODE_FN	"resources/img/filtermode.png"
 
 // GUI default dimensions
 #define GUI_WIDTH 434	
