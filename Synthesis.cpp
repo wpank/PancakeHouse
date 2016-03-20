@@ -41,7 +41,8 @@ enum ELayout
 Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
   :	IPLUG_CTOR(kNumParams, kNumPrograms, instanceInfo),
 	lastVirtualKeyboardNoteNumber(virtualKeyboardMinimumNoteNumber - 1),
-	filterEnvelopeAmount(0.0)
+	filterEnvelopeAmount(0.0),
+	lfoFilterModAmount(0.1)
 {
   TRACE;
 
@@ -132,6 +133,11 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 
   mEnvelopeGenerator.beganEnvelopeCycle.Connect(this, &Synthesis::onBeganEvelopeCycle);
   mEnvelopeGenerator.finishedEnvelopeCycle.Connect(this, &Synthesis::onFinishedEnvelopeCycle);
+
+  mLFO.setMode(OSCILLATOR_MODE_TRIANGLE);
+  mLFO.setFrequency(6.0);
+  mLFO.setMuted(false);
+
 }
 
 Synthesis::~Synthesis() {}
@@ -152,7 +158,7 @@ void Synthesis::ProcessDoubleReplacing(double** inputs,
 	for (int i = 0; i < nFrames; ++i) {
 		mMIDIReceiver.advance();
 		int velocity = mMIDIReceiver.getLastVelocity();
-		
+		double lfoFilterModulation = mLFO.nextSample() * lfoFilterModAmount;
 		mOscillator.setFrequency(mMIDIReceiver.getLastFrequency());
 		
 		
@@ -165,7 +171,7 @@ void Synthesis::ProcessDoubleReplacing(double** inputs,
 			mEnvelopeGenerator.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_RELEASE);
 		} 
 		*/
-		mFilter.setCutoffMod(mFilterEnvelopeGenerator.nextSample() * filterEnvelopeAmount);
+		mFilter.setCutoffMod((mFilterEnvelopeGenerator.nextSample() * filterEnvelopeAmount) + lfoFilterModulation);
 		leftOutput[i] = rightOutput[i] = mFilter.process(mOscillator.nextSample() * mEnvelopeGenerator.nextSample() * velocity / 127.0);
 	}
 	mMIDIReceiver.Flush(nFrames);
@@ -178,6 +184,7 @@ void Synthesis::Reset()
   mOscillator.setSampleRate(GetSampleRate());
   mEnvelopeGenerator.setSampleRate(GetSampleRate());
   mFilterEnvelopeGenerator.setSampleRate(GetSampleRate());
+  mLFO.setSampleRate(GetSampleRate());
 }
 
 void Synthesis::OnParamChange(int paramIdx)

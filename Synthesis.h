@@ -58,6 +58,9 @@ private:
 
   EnvelopeGenerator mFilterEnvelopeGenerator;
   double filterEnvelopeAmount;
+
+  Oscillator mLFO;
+  double lfoFilterModAmount;
 };
 
 #endif
