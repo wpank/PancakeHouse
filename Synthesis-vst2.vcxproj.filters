@@ -18,6 +18,7 @@
     <ClInclude Include="Oscillator.h" />
     <ClInclude Include="MIDIReceiver.h" />
     <ClInclude Include="EnvelopeGenerator.h" />
+    <ClInclude Include="..\..\..\Signals-master\GallantSignal.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Synthesis.rc" />

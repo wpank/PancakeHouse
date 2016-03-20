@@ -43,6 +43,9 @@ private:
 
   inline void onNoteOn(const int noteNumber, const int velocity) {mEnvelopeGenerator.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_ATTACK); };
   inline void onNoteOff(const int noteNumber, const int veloctiy) { mEnvelopeGenerator.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_RELEASE); }
+
+  inline void onBeganEvelopeCycle() { mOscillator.setMuted(false); }
+  inline void onFinishedEnvelopeCycle() { mOscillator.setMuted(true); }
 };
 
 #endif
