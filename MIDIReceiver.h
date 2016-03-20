@@ -1,5 +1,5 @@
-#ifndef __Synthesis__MIDIReceiver__
-#define __Synthesis__MIDIReceiver__
+#ifndef __PancakeHouse__MIDIReceiver__
+#define __PancakeHouse__MIDIReceiver__
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wextra-tokens"
@@ -58,4 +58,4 @@ public:
 	Signal2<int, int> noteOff;
 };
 
-#endif /* defined(__Synthesis__MIDIReceiver__) */
+#endif /* defined(__PancakeHouse__MIDIReceiver__) */

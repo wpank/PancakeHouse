@@ -1,0 +1,4 @@
+LIBRARY		PancakeHouse	
+EXPORTS
+	NewPlugIn					@1
+	_PI_GetRoutineDescriptor	@2

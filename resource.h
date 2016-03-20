@@ -1,19 +1,19 @@
 #define PLUG_MFR "Will"
-#define PLUG_NAME "Synthesis"
+#define PLUG_NAME "PancakeHouse"
 
-#define PLUG_CLASS_NAME Synthesis
+#define PLUG_CLASS_NAME PancakeHouse
 
 #define BUNDLE_MFR "Will"
-#define BUNDLE_NAME "Synthesis"
+#define BUNDLE_NAME "PancakeHouse"
 
-#define PLUG_ENTRY Synthesis_Entry
-#define PLUG_VIEW_ENTRY Synthesis_ViewEntry
+#define PLUG_ENTRY PancakeHouse_Entry
+#define PLUG_VIEW_ENTRY PancakeHouse_ViewEntry
 
-#define PLUG_ENTRY_STR "Synthesis_Entry"
-#define PLUG_VIEW_ENTRY_STR "Synthesis_ViewEntry"
+#define PLUG_ENTRY_STR "PancakeHouse_Entry"
+#define PLUG_VIEW_ENTRY_STR "PancakeHouse_ViewEntry"
 
-#define VIEW_CLASS Synthesis_View
-#define VIEW_CLASS_STR "Synthesis_View"
+#define VIEW_CLASS PancakeHouse_View
+#define VIEW_CLASS_STR "PancakeHouse_View"
 
 // Format        0xMAJR.MN.BG - in HEX! so version 10.1.5 would be 0x000A0105
 #define PLUG_VER 0x00010000
@@ -34,7 +34,7 @@
 #endif
 
 #define PLUG_MFR_PT "Will\nWill\nAcme"
-#define PLUG_NAME_PT "Synthesis\nIPEF"
+#define PLUG_NAME_PT "PancakeHouse\nIPEF"
 #define PLUG_TYPE_PT "Effect"
 #define PLUG_DOES_AUDIOSUITE 1
 
@@ -67,8 +67,7 @@ instrument determined by PLUG _IS _INST
 #define BLACK_KEY_ID 103
 #define WAVEFORM_ID 104
 #define KNOB_ID	105 
-#define KNOB_SMALL_ID 106
-#define FILTERMODE_ID 107
+#define FILTERMODE_ID 106
 
 // Image resource locations for this plug.
 #define BG_FN	"resources/img/bg.png"
@@ -76,12 +75,11 @@ instrument determined by PLUG _IS _INST
 #define BLACK_KEY_FN	"resources/img/blackkey.png"
 #define WAVEFORM_FN		"resources/img/waveform.png"
 #define	KNOB_FN			"resources/img/knob.png"
-#define KNOB_SMALL_FN	"resources/img/knob_small.png"
 #define FILTERMODE_FN	"resources/img/filtermode.png"
 
 // GUI default dimensions
-#define GUI_WIDTH 434	
-#define GUI_HEIGHT 296
+#define GUI_WIDTH 571	
+#define GUI_HEIGHT 500
 
 // on MSVC, you must define SA_API in the resource editor preprocessor macros as well as the c++ ones
 #if defined(SA_API) && !defined(OS_IOS)

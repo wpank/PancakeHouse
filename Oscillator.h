@@ -1,28 +1,19 @@
-#ifndef __Synthesis__Oscillator__
-#define __Synthesis__Oscillator__
+#ifndef __PancakeHouse__Oscillator__
+#define __PancakeHouse__Oscillator__
 
 #include <math.h>
 
-enum OscillatorMode {
-	OSCILLATOR_MODE_SINE = 0,
-	OSCILLATOR_MODE_SAW,
-	OSCILLATOR_MODE_SQUARE,
-	OSCILLATOR_MODE_TRIANGLE,
-	kNumOscillatorModes
-};
+
 
 class Oscillator {
-private:
-	OscillatorMode mOscillatorMode;
-	const double mPI;
-	double mFrequency;
-	double mPhase;
-	double mSampleRate;
-	double mPhaseIncrement;
-	void updateIncrement();
-	const double twoPI;
-	bool isMuted;
 public:
+	enum OscillatorMode {
+		OSCILLATOR_MODE_SINE = 0,
+		OSCILLATOR_MODE_SAW,
+		OSCILLATOR_MODE_SQUARE,
+		OSCILLATOR_MODE_TRIANGLE,
+		kNumOscillatorModes
+	};
 	void setMode(OscillatorMode mode);
 	void setFrequency(double frequency);
 	void setSampleRate(double sampleRate);
@@ -39,7 +30,18 @@ public:
 		mSampleRate(44100.0) {
 		updateIncrement();
 	};
+
+private:
+	OscillatorMode mOscillatorMode;
+	const double mPI;
+	double mFrequency;
+	double mPhase;
+	double mSampleRate;
+	double mPhaseIncrement;
+	void updateIncrement();
+	const double twoPI;
+	bool isMuted;
 };
 
-#endif /* defined(__Synthesis__Oscillator__) */
-/* defined(__Synthesis__Oscillator__) */
+#endif /* defined(__PancakeHouse__Oscillator__) */
+/* defined(__PancakeHouse__Oscillator__) */

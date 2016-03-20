@@ -12,9 +12,9 @@
 
  App settings are stored in a .ini file. The location is as follows:
 
- Windows7: C:\Users\USERNAME\AppData\Local\Synthesis\settings.ini
- Windows XP/Vista: C:\Documents and Settings\USERNAME\Local Settings\Application Data\Synthesis\settings.ini
- OSX: /Users/USERNAME/Library/Application\ Support/Synthesis/settings.ini
+ Windows7: C:\Users\USERNAME\AppData\Local\PancakeHouse\settings.ini
+ Windows XP/Vista: C:\Documents and Settings\USERNAME\Local Settings\Application Data\PancakeHouse\settings.ini
+ OSX: /Users/USERNAME/Library/Application\ Support/PancakeHouse/settings.ini
 
 */
 
@@ -44,7 +44,7 @@
 #include <string>
 #include <vector>
 
-#include "../Synthesis.h" // change this to match your iplug plugin .h file
+#include "../PancakeHouse.h" // change this to match your iplug plugin .h file
 
 typedef unsigned short UInt16;
 
