@@ -1,4 +1,5 @@
 #include "Oscillator.h"
+double Oscillator::mSampleRate = 44100.0;
 
 void Oscillator::setMode(OscillatorMode mode) {
 	mOscillatorMode = mode;
@@ -14,9 +15,7 @@ void Oscillator::setSampleRate(double sampleRate) {
 	updateIncrement();
 }
 
-void Oscillator::updateIncrement() {
-	mPhaseIncrement = mFrequency * 2 * mPI / mSampleRate;
-}
+
 
 void Oscillator::generate(double* buffer, int nFrames) {
 	const double twoPI = 2 * mPI;
@@ -68,7 +67,6 @@ void Oscillator::generate(double* buffer, int nFrames) {
 
 double Oscillator::nextSample() {
 	double value = 0.0;
-	if (isMuted) return value;
 
 	switch (mOscillatorMode) {
 	case OSCILLATOR_MODE_SINE:
@@ -95,5 +93,19 @@ double Oscillator::nextSample() {
 		mPhase -= twoPI;
 	}
 	return value;
+}
+
+void Oscillator::setPitchMod(double amount) {
+	mPitchMod = amount;
+	updateIncrement();
+}
+
+void Oscillator::updateIncrement() {
+	double pitchModAsFrequency = pow(2.0, fabs(mPitchMod) * 14.0) - 1;
+	if (mPitchMod < 0) {
+		pitchModAsFrequency = -pitchModAsFrequency;
+	}
+	double calculatedFrequency = fmin(fmax(mFrequency + pitchModAsFrequency, 0), mSampleRate / 2.0);
+	mPhaseIncrement = calculatedFrequency * 2 * mPI / mSampleRate;
 }
 

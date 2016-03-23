@@ -29,6 +29,10 @@ public:
 		calculateFeedbackAmount();
 	}
 
+	void reset() {
+		buf0 = buf1 = buf2 = buf3 = 0.0;
+	}
+
 private:
 	double cutoff;
 	double resonance;

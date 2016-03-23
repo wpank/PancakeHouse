@@ -1,6 +1,6 @@
 #include "EnvelopeGenerator.h"
 
-
+double EnvelopeGenerator::sampleRate = 44100.0;
 
 
 double EnvelopeGenerator::nextSample() {

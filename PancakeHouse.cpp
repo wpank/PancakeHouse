@@ -9,6 +9,7 @@
 
 #include <math.h>
 #include <algorithm>
+#include <functional>
 
 const int kNumPrograms = 5;
 const double parameterStep = 0.001;
@@ -86,9 +87,7 @@ enum ELayout
 
 PancakeHouse::PancakeHouse(IPlugInstanceInfo instanceInfo)
   :	IPLUG_CTOR(kNumParams, kNumPrograms, instanceInfo),
-	lastVirtualKeyboardNoteNumber(virtualKeyboardMinimumNoteNumber - 1),
-	filterEnvelopeAmount(0.0),
-	lfoFilterModAmount(0.1)
+	lastVirtualKeyboardNoteNumber(virtualKeyboardMinimumNoteNumber - 1)
 {
   TRACE;
 
@@ -96,11 +95,8 @@ PancakeHouse::PancakeHouse(IPlugInstanceInfo instanceInfo)
   CreateGraphics();
   CreatePresets();
 
-  mMIDIReceiver.noteOn.Connect(this, &PancakeHouse::onNoteOn);
-  mMIDIReceiver.noteOff.Connect(this, &PancakeHouse::onNoteOff);
-
-  mEnvelopeGenerator.beganEnvelopeCycle.Connect(this, &PancakeHouse::onBeganEvelopeCycle);
-  mEnvelopeGenerator.finishedEnvelopeCycle.Connect(this, &PancakeHouse::onFinishedEnvelopeCycle);
+  mMIDIReceiver.noteOn.Connect(&voiceManager, &VoiceManager::onNoteOn);
+  mMIDIReceiver.noteOff.Connect(&voiceManager, &VoiceManager::onNoteOff);
 }
 
 PancakeHouse::~PancakeHouse() {}
@@ -114,28 +110,11 @@ void PancakeHouse::ProcessDoubleReplacing(double** inputs,
 	double *leftOutput = outputs[0];
 	double *rightOutput = outputs[1];
 
-	
 	processVirtualKeyboard();
-
 	//copy left buffer into right buffer
 	for (int i = 0; i < nFrames; ++i) {
 		mMIDIReceiver.advance();
-		int velocity = mMIDIReceiver.getLastVelocity();
-		double lfoFilterModulation = mLFO.nextSample() * lfoFilterModAmount;
-		mOscillator.setFrequency(mMIDIReceiver.getLastFrequency());
-		
-		
-		//leftOutput[i] = rightOutput[i] = mOscillator.nextSample() * velocity / 127.0;
-		/* 
-		if (mEnvelopeGenerator.getCurrentStage() == EnvelopeGenerator::ENVELOPE_STAGE_OFF) {
-			mEnvelopeGenerator.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_ATTACK);
-		}
-		if (mEnvelopeGenerator.getCurrentStage() == EnvelopeGenerator::ENVELOPE_STAGE_SUSTAIN) {
-			mEnvelopeGenerator.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_RELEASE);
-		} 
-		*/
-		mFilter.setCutoffMod((mFilterEnvelopeGenerator.nextSample() * filterEnvelopeAmount) + lfoFilterModulation);
-		leftOutput[i] = rightOutput[i] = mFilter.process(mOscillator.nextSample() * mEnvelopeGenerator.nextSample() * velocity / 127.0);
+		leftOutput[i] = rightOutput[i] = voiceManager.nextSample();
 	}
 	mMIDIReceiver.Flush(nFrames);
 }
@@ -144,48 +123,92 @@ void PancakeHouse::Reset()
 {
   TRACE;
   IMutexLock lock(this);
-  mOscillator.setSampleRate(GetSampleRate());
-  mEnvelopeGenerator.setSampleRate(GetSampleRate());
-  mFilterEnvelopeGenerator.setSampleRate(GetSampleRate());
-  mLFO.setSampleRate(GetSampleRate());
+  double sampleRate = GetSampleRate();
+  voiceManager.setSampleRate(sampleRate);
 }
 
 void PancakeHouse::OnParamChange(int paramIdx)
 {
   IMutexLock lock(this);
-  
+  IParam* param = GetParam(paramIdx);
+  if (paramIdx == mLFOWaveform) {
+	  voiceManager.setLFOMode(static_cast<Oscillator::OscillatorMode>(param->Int()));
+  }
+  else if (paramIdx == mLFOFrequency) {
+	  voiceManager.setLFOFrequency(param->Value());
+  }
+  else {
+	  using std::tr1::placeholders::_1;
+	  using std::tr1::bind;
+	  VoiceManager::VoiceChangerFunction changer;
+	  switch (paramIdx) {
+	  case mOsc1Waveform:
+		  changer = bind(&VoiceManager::setOscillatorMode, _1, 1, static_cast<Oscillator::OscillatorMode>(param->Int()));
+		  break;
+	  case mOsc1PitchMod:
+		  changer = bind(&VoiceManager::setOscillatorPitchMod, _1, 1, param->Value());
+		  break;
+	  case mOsc2Waveform:
+		  changer = bind(&VoiceManager::setOscillatorMode, _1, 2, static_cast<Oscillator::OscillatorMode>(param->Int()));
+		  break;
+	  case mOsc2PitchMod:
+		  changer = bind(&VoiceManager::setOscillatorPitchMod, _1, 2, param->Value());
+		  break;
+	  case mOscMix:
+		  changer = bind(&VoiceManager::setOscillatorMix, _1, param->Value());
+		  break;
+		  // Filter Section:
+	  case mFilterMode:
+		  changer = bind(&VoiceManager::setFilterMode, _1, static_cast<Filter::FilterMode>(param->Int()));
+		  break;
+	  case mFilterCutoff:
+		  changer = bind(&VoiceManager::setFilterCutoff, _1, param->Value());
+		  break;
+	  case mFilterResonance:
+		  changer = bind(&VoiceManager::setFilterResonance, _1, param->Value());
+		  break;
+	  case mFilterLfoAmount:
+		  changer = bind(&VoiceManager::setFilterLFOAmount, _1, param->Value());
+		  break;
+	  case mFilterEnvAmount:
+		  changer = bind(&VoiceManager::setFilterEnvAmount, _1, param->Value());
+		  break;
+		  // Volume Envelope
+	  case mVolumeEnvAttack:
+		  changer = bind(&VoiceManager::setVolumeEnvelopeStageValue, _1, EnvelopeGenerator::ENVELOPE_STAGE_ATTACK, param->Value());
+		  break;
+	  case mVolumeEnvDecay:
+		  changer = bind(&VoiceManager::setVolumeEnvelopeStageValue, _1, EnvelopeGenerator::ENVELOPE_STAGE_DECAY, param->Value());
+		  break;
+	  case mVolumeEnvSustain:
+		  changer = bind(&VoiceManager::setFilterEnvelopeStageValue, _1, EnvelopeGenerator::ENVELOPE_STAGE_SUSTAIN, param->Value());
+		  break;
+	  case mVolumeEnvRelease:
+		  changer = bind(&VoiceManager::setFilterEnvelopeStageValue, _1, EnvelopeGenerator::ENVELOPE_STAGE_RELEASE, param->Value());
+		  break;
+		  //Filter Envelope
+	  case mFilterEnvAttack:
+		  changer = bind(&VoiceManager::setFilterEnvelopeStageValue, _1, EnvelopeGenerator::ENVELOPE_STAGE_ATTACK, param->Value());
+		  break;
+	  case mFilterEnvDecay:
+		  changer = bind(&VoiceManager::setFilterEnvelopeStageValue, _1, EnvelopeGenerator::ENVELOPE_STAGE_DECAY, param->Value());
+		  break;
+	  case mFilterEnvSustain:
+		  changer = bind(&VoiceManager::setFilterEnvelopeStageValue, _1, EnvelopeGenerator::ENVELOPE_STAGE_SUSTAIN, param->Value());
+		  break;
+	  case mFilterEnvRelease:
+		  changer = bind(&VoiceManager::setFilterEnvelopeStageValue, _1, EnvelopeGenerator::ENVELOPE_STAGE_RELEASE, param->Value());
+		  break;
+
+
+	  }
+	  voiceManager.changeAllVoices(changer);
+  }
 
 }
 
 void PancakeHouse::CreatePresets() {
 	
-}
-
-void PancakeHouse::ProcessMidiMsg(IMidiMsg* pMsg) {
-	mMIDIReceiver.onMessageReceived(pMsg);
-	mVirtualKeyboard->SetDirty();
-}
-
-void PancakeHouse::processVirtualKeyboard() {
-	IKeyboardControl* virtualKeyboard = (IKeyboardControl*)mVirtualKeyboard;
-	int virtualKeyboardNoteNumber = virtualKeyboard->GetKey() + virtualKeyboardMinimumNoteNumber;
-
-	if (lastVirtualKeyboardNoteNumber >= virtualKeyboardMinimumNoteNumber && virtualKeyboardNoteNumber != lastVirtualKeyboardNoteNumber) {
-		// The note number has changed from a valid key to something else (valid key or nothing). Release the valid key:
-		IMidiMsg midiMessage;
-		midiMessage.MakeNoteOffMsg(lastVirtualKeyboardNoteNumber, 0);
-		mMIDIReceiver.onMessageReceived(&midiMessage);
-	}
-
-	if (virtualKeyboardNoteNumber >= virtualKeyboardMinimumNoteNumber && virtualKeyboardNoteNumber != lastVirtualKeyboardNoteNumber) {
-		// A valid key is presesed that wasn't pressed the previous call. Send a "note on" message to the MIDI receiver:
-		IMidiMsg midiMessage;
-		midiMessage.MakeNoteOnMsg(virtualKeyboardNoteNumber, virtualKeyboard->GetVelocity(), 0);
-		mMIDIReceiver.onMessageReceived(&midiMessage);
-	}
-		
-	lastVirtualKeyboardNoteNumber = virtualKeyboardNoteNumber;
-
 }
 
 void PancakeHouse::CreateParams() {
@@ -214,7 +237,7 @@ void PancakeHouse::CreateParams() {
 				Filter::FILTER_MODE_LOWPASS,
 				Filter::knumFilterModes);
 			break;
-		//Double Parameters
+			//Double Parameters
 		default:
 			param->InitDouble(properties.name,
 				properties.defaultVal,
@@ -247,8 +270,8 @@ void PancakeHouse::CreateGraphics() {
 	IBitmap whiteKeyImage = pGraphics->LoadIBitmap(WHITE_KEY_ID, WHITE_KEY_FN, 6);
 	IBitmap blackKeyImage = pGraphics->LoadIBitmap(BLACK_KEY_ID, BLACK_KEY_FN);
 	//                            C#      D#          F#      G#      A#
-  	int keyCoordinates[12] = { 0, 10, 17, 30, 35, 52, 61, 68, 79, 85, 97, 102 };
-	mVirtualKeyboard = new IKeyboardControl(this, kKeybX, kKeybY, virtualKeyboardMinimumNoteNumber, /*octaves: */ 4, &whiteKeyImage, &blackKeyImage, keyCoordinates); 
+	int keyCoordinates[12] = { 0, 10, 17, 30, 35, 52, 61, 68, 79, 85, 97, 102 };
+	mVirtualKeyboard = new IKeyboardControl(this, kKeybX, kKeybY, virtualKeyboardMinimumNoteNumber, /*octaves: */ 4, &whiteKeyImage, &blackKeyImage, keyCoordinates);
 	pGraphics->AttachControl(mVirtualKeyboard);
 
 	IBitmap waveformBitmap = pGraphics->LoadIBitmap(WAVEFORM_ID, WAVEFORM_FN, 4);
@@ -271,7 +294,7 @@ void PancakeHouse::CreateGraphics() {
 			graphic = &filterModeBitmap;
 			control = new ISwitchControl(this, properties.x, properties.y, i, graphic);
 			break;
-		// Knobs
+			// Knobs
 		default:
 			graphic = &knobBitmap;
 			control = new IKnobMultiControl(this, properties.x, properties.y, i, graphic);
@@ -281,4 +304,35 @@ void PancakeHouse::CreateGraphics() {
 	}
 	AttachGraphics(pGraphics);
 }
+
+void PancakeHouse::ProcessMidiMsg(IMidiMsg* pMsg) {
+	mMIDIReceiver.onMessageReceived(pMsg);
+	mVirtualKeyboard->SetDirty();
+}
+
+void PancakeHouse::processVirtualKeyboard() {
+	IKeyboardControl* virtualKeyboard = (IKeyboardControl*)mVirtualKeyboard;
+	int virtualKeyboardNoteNumber = virtualKeyboard->GetKey() + virtualKeyboardMinimumNoteNumber;
+
+	if (lastVirtualKeyboardNoteNumber >= virtualKeyboardMinimumNoteNumber && virtualKeyboardNoteNumber != lastVirtualKeyboardNoteNumber) {
+		// The note number has changed from a valid key to something else (valid key or nothing). Release the valid key:
+		IMidiMsg midiMessage;
+		midiMessage.MakeNoteOffMsg(lastVirtualKeyboardNoteNumber, 0);
+		mMIDIReceiver.onMessageReceived(&midiMessage);
+	}
+
+	if (virtualKeyboardNoteNumber >= virtualKeyboardMinimumNoteNumber && virtualKeyboardNoteNumber != lastVirtualKeyboardNoteNumber) {
+		// A valid key is presesed that wasn't pressed the previous call. Send a "note on" message to the MIDI receiver:
+		IMidiMsg midiMessage;
+		midiMessage.MakeNoteOnMsg(virtualKeyboardNoteNumber, virtualKeyboard->GetVelocity(), 0);
+		mMIDIReceiver.onMessageReceived(&midiMessage);
+	}
+		
+	lastVirtualKeyboardNoteNumber = virtualKeyboardNoteNumber;
+
+}
+
+
+
+
 

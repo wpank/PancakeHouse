@@ -288,6 +288,8 @@
     <ClInclude Include="Oscillator.h" />
     <ClInclude Include="PancakeHouse.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Voice.h" />
+    <ClInclude Include="VoiceManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\ASIO_SDK\asio.cpp" />
@@ -310,6 +312,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="PancakeHouse.cpp" />
+    <ClCompile Include="Voice.cpp" />
+    <ClCompile Include="VoiceManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PancakeHouse.rc" />

@@ -6,10 +6,9 @@
 #include "IPlug_include_in_plug_hdr.h"
 #pragma clang diagnostic pop
 
-#include "Oscillator.h"
 #include "MIDIReceiver.h"
-#include "EnvelopeGenerator.h"
-#include "Filter.h"
+#include "VoiceManager.h"
+
 
 class PancakeHouse : public IPlug
 {
@@ -34,35 +33,14 @@ public:
 
 private:
   void CreatePresets();
-  Oscillator mOscillator;
   MIDIReceiver mMIDIReceiver;
 
   IControl* mVirtualKeyboard;
   void processVirtualKeyboard();
-  EnvelopeGenerator mEnvelopeGenerator;
-
-  inline void onNoteOn(const int noteNumber, const int velocity) {
-	  mEnvelopeGenerator.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_ATTACK); 
-	  mFilterEnvelopeGenerator.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_ATTACK);
-  };
-  inline void onNoteOff(const int noteNumber, const int veloctiy) { 
-	  mEnvelopeGenerator.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_RELEASE); 
-	  mFilterEnvelopeGenerator.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_RELEASE);
-  }
-
-  inline void onBeganEvelopeCycle() { mOscillator.setMuted(false); }
-  inline void onFinishedEnvelopeCycle() { mOscillator.setMuted(true); }
-
-  Filter mFilter;
-
-  EnvelopeGenerator mFilterEnvelopeGenerator;
-  double filterEnvelopeAmount;
-
-  Oscillator mLFO;
-  double lfoFilterModAmount;
 
   void CreateParams();
   void CreateGraphics();
+  VoiceManager voiceManager;
 };
 
 #endif
