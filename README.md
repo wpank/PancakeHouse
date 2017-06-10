@@ -1,4 +1,4 @@
 # PancakeHouse
 Polyphonic Synthesizer
 
-![screenshot](PancakeHouse/screenshot.PNG)
+![screenshot](wpank/PancakeHouse/screenshot.PNG)
