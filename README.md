@@ -7,8 +7,32 @@
 ## Features
 ### Oscillators
 - Two separate Oscillators 
-- Three different waveshapes (Square, Triangle, Sine)
-- Each Oscillator has it's own pitch mod 
-- Mix control to blend the two oscillator
+- Four different waveshapes (Square, Triangle, Sine, Saw)
+- Each Oscillator has its own pitch mod 
+- Mix control to blend the two oscillators
 
-###
+### Volume Envelope
+- Attack 
+- Decay 
+- Sustain
+- Release
+
+### Filters
+- Three kinds of filters:
+  - High Pass
+  - Low Pass
+  - Band Pass
+- Cutoff
+- Resonance
+- LFO modulation amount
+- Envelope amount (Wet/Dry)
+
+### Filter Envelope
+- Attack
+- Decay
+- Sustain
+- Release
+
+### LFO
+- Four LFO Waveshapes (Square, Triangle, Sine, Saw)
+- Frequency Range
