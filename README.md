@@ -5,8 +5,10 @@
 [Soundcloud Demo](https://soundcloud.com/ubancakes/pancake-house-demo)
 
 ## Features
-### Oscilattors
-- Two separate Oscilattors 
+### Oscillators
+- Two separate Oscillators 
 - Three different waveshapes (Square, Triangle, Sine)
 - Each Oscillator has it's own pitch mod 
-- Mix control to blend the two oscilattors
+- Mix control to blend the two oscillator
+
+###
