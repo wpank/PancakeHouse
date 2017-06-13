@@ -44,7 +44,13 @@
 
 ### Standalone Executable
 
+[Download](https://github.com/wpank/PancakeHouse/raw/master/download/PancakeHouse/PancakeHouse.exe)
+
 ### VST for DAWS
+1. [Download the installer](https://github.com/wpank/PancakeHouse/raw/master/download/PancakeHouse/PancakeHouseInstaller.exe)
+2. Extract the context to your DAW's VST folder
+3. Rescan VSTs
+4. Make some sweet music
 
 
 ## OS X and Linux
