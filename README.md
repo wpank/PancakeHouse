@@ -3,6 +3,7 @@
 
 
 [Soundcloud Demo](https://soundcloud.com/ubancakes/pancake-house-demo)
+[Download](https://github.com/wpank/PancakeHouse/raw/master/download/PancakeHouse.dll)
 
 ## Features
 ### Oscillators
