@@ -3,7 +3,6 @@
 
 
 [Soundcloud Demo](https://soundcloud.com/ubancakes/pancake-house-demo)
-[Download](https://github.com/wpank/PancakeHouse/raw/master/download/PancakeHouse.dll)
 
 ## Features
 ### Oscillators
@@ -37,3 +36,16 @@
 ### LFO
 - Four LFO Waveshapes (Square, Triangle, Sine, Saw)
 - Frequency Range
+
+**********************************
+# Install
+
+## Windows
+
+### Standalone Executable
+
+### VST for DAWS
+
+
+## OS X and Linux
+- Coming Soon!
